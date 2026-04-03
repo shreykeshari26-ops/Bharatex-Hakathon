@@ -477,16 +477,29 @@ def show_auth_page():
                 st.error("❌ Invalid username or password.")
 
     with tab_reg:
-        st.info("Students can self-register. Admin accounts are created by the super-admin.")
         new_uname = st.text_input("Choose Username", key="r_uname")
         new_pwd   = st.text_input("Choose Password", type="password", key="r_pwd")
-        if st.button("Register as Student", type="secondary"):
+
+        st.markdown("**Register as:**")
+        reg_col1, reg_col2 = st.columns(2)
+
+        def _do_register(reg_role: str):
             if len(new_pwd) < 6:
                 st.error("Password must be at least 6 characters.")
-            elif register_user(new_uname, new_pwd, "student"):
-                st.success("✅ Registered! Please login.")
+            elif not new_uname.strip():
+                st.error("Username cannot be empty.")
+            elif register_user(new_uname.strip(), new_pwd, reg_role):
+                st.success(f"✅ Registered as **{reg_role}**! Please login.")
             else:
                 st.error("Username already exists.")
+
+        with reg_col1:
+            if st.button("🎓 Register as Student", type="primary", use_container_width=True):
+                _do_register("student")
+
+        with reg_col2:
+            if st.button("🛡️ Register as Admin", type="secondary", use_container_width=True):
+                _do_register("admin")
 
 
 # ============================================================
