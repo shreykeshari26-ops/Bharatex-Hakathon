@@ -16,9 +16,10 @@ def init_db():
     c = conn.cursor()
     c.execute('''CREATE TABLE IF NOT EXISTS jobs 
                  (id INTEGER PRIMARY KEY, role TEXT, company TEXT, jd TEXT)''')
+    # ADDED 'status' COLUMN HERE
     c.execute('''CREATE TABLE IF NOT EXISTS applications 
                  (id INTEGER PRIMARY KEY, student_name TEXT, job_id INTEGER, 
-                  resume_text TEXT, ai_score INTEGER, feedback TEXT)''')
+                  resume_text TEXT, ai_score INTEGER, feedback TEXT, status TEXT)''')
     conn.commit()
     conn.close()
 
@@ -112,12 +113,12 @@ elif choice == "Student: Apply & Track":
             st.warning("No active drives yet.")
 
     with tab2:
+        st.subheader("🔍 Your Application Journey")
         search = st.text_input("Enter your name to track")
         if search:
             conn = sqlite3.connect('placement.db')
-            # Fixed SQL query to use proper JOIN
             query = f"""
-                SELECT a.ai_score, a.feedback, j.company, j.role 
+                SELECT a.ai_score, a.feedback, j.company, j.role, a.status 
                 FROM applications a 
                 JOIN jobs j ON a.job_id = j.id 
                 WHERE a.student_name LIKE '%{search}%'
@@ -125,19 +126,32 @@ elif choice == "Student: Apply & Track":
             res = pd.read_sql_query(query, conn)
             if not res.empty:
                 for i, row in res.iterrows():
-                    with st.expander(f"{row['company']} - {row['role']}"):
-                        st.write(f"**AI Score:** {row['ai_score']}/100")
-                        st.progress(row['ai_score'] / 100)
-                        st.info(f"**Feedback:** {row['feedback']}")
+                    with st.expander(f"📌 {row['company']} - {row['role']}", expanded=True):
+                        # Journey Progress Bar
+                        stages = ["Applied", "Screened", "Shortlisted", "Interview", "Offered"]
+                        current_status = row['status'] if row['status'] else "Applied"
+                        current_idx = stages.index(current_status) if current_status in stages else 0
+                        
+                        # Visual Progress
+                        st.write(f"**Current Stage:** `{current_status}`")
+                        st.progress((current_idx + 1) / len(stages))
+                        
+                        # Status-specific Tips
+                        if current_status == "Applied":
+                            st.info("Your resume is in the queue for AI Screening.")
+                        elif current_status == "Screened":
+                            st.success(f"AI Score: {row['ai_score']}/100. The TPO is reviewing your profile.")
+                        
+                        st.write(f"**AI Insights:** {row['feedback']}")
             else:
-                st.info("No application found for that name.")
+                st.info("No application found.")
 
 # --- TPO VIEW ---
 elif choice == "TPO: Dashboard":
     st.header("📊 Admin Dashboard (TPO)")
     conn = sqlite3.connect('placement.db')
     query = """
-        SELECT a.student_name, j.company, j.role, a.ai_score 
+        SELECT a.id, a.student_name, j.company, j.role, a.ai_score, a.status 
         FROM applications a 
         JOIN jobs j ON a.job_id = j.id 
         ORDER BY a.ai_score DESC
@@ -145,19 +159,39 @@ elif choice == "TPO: Dashboard":
     apps = pd.read_sql_query(query, conn)
     
     if not apps.empty:
-        st.write("### AI-Ranked Student Shortlist")
         st.dataframe(apps, use_container_width=True)
         
         st.divider()
-        st.subheader("Smart Communication")
-        selected = st.selectbox("Select Candidate for Interview Invite", apps['student_name'].tolist())
-        if st.button("Generate Interview Email"):
-            # Ensure even the email generator uses the stable model
-            try:
-                invite_prompt = f"Write a professional interview invitation for {selected}."
-                email_body = client.models.generate_content(model='gemini-1.5-flash', contents=invite_prompt).text
-                st.text_area("Draft Email", value=email_body, height=200)
-            except:
-                st.error("Email service is temporarily limited. Please try again in 1 minute.")
+        col1, col2 = st.columns(2)
+        
+        with col1:
+            st.subheader("🛠️ Management")
+            selected_id = st.selectbox("Select Student ID to Update", apps['id'].tolist())
+            new_status = st.selectbox("Update Status", ["Applied", "Screened", "Shortlisted", "Interview", "Offered"])
+            if st.button("Update Status"):
+                c = conn.cursor()
+                c.execute("UPDATE applications SET status = ? WHERE id = ?", (new_status, selected_id))
+                conn.commit()
+                st.rerun() # Refresh to show new status
+
+        with col2:
+            st.subheader("📧 Smart Mailer")
+            if st.button("Generate Interview Invite"):
+                candidate = apps[apps['id'] == selected_id].iloc[0]
+                
+                # Prompt for a high-quality email
+                invite_prompt = (
+                    f"Write a professional interview invitation email for {candidate['student_name']} "
+                    f"for the role of {candidate['role']} at {candidate['company']}. "
+                    "Mention their impressive resume screening score. Keep placeholders for [Time] and [Link]."
+                )
+                
+                with st.spinner("AI is drafting the email..."):
+                    email_body = client.models.generate_content(
+                        model='gemini-1.5-flash', 
+                        contents=invite_prompt
+                    ).text
+                    st.text_area("Draft Email", value=email_body, height=250)
+                    st.caption("Copy this to your email client.")
     else:
-        st.info("Waiting for students to apply.")
+        st.info("Waiting for applications.")
