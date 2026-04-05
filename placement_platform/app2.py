@@ -1363,13 +1363,16 @@ def show_app():
 # ============================================================
 # ENTRY POINT
 # ============================================================
-if __name__ == "__main__" or True:
+if __name__ == "__main__":
+    # 1. MUST BE FIRST
+    st.set_page_config(page_title="PlaceMind AI", page_icon="⚡", layout="wide")
+    
+    # 2. Then initialize logic
     init_db()
     init_session()
-
-    st.set_page_config(page_title="PlaceMind AI", page_icon="⚡", layout="wide")
     inject_css()
 
+    # 3. Then sidebar & auth
     st.sidebar.markdown("""
     <div class="sidebar-brand">
       <h2>⚡ PlaceMind AI</h2>
