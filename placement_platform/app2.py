@@ -78,7 +78,6 @@ SHORTLIST_THRESHOLD = 40
 @st.cache_resource
 def get_engine():
     """Create and cache the SQLAlchemy engine using DB_URL from secrets."""
-    # Fallback to SQLite for local dev if DB_URL not in secrets
     db_url = st.secrets.get("DB_URL", "sqlite:///placement.db")
     engine = create_engine(db_url, poolclass=NullPool)
     return engine
@@ -212,7 +211,7 @@ def inject_css():
         --glass:        rgba(124, 77, 255, 0.07);
     }
 
-    /* Core Layout */
+    /* ── Core Layout ── */
     html, body, [class*="css"] {
         font-family: 'Outfit', sans-serif !important;
         background: var(--bg) !important;
@@ -222,36 +221,113 @@ def inject_css():
     #MainMenu, footer, header { visibility: hidden; }
     .block-container { padding: 2rem 2.5rem 4rem !important; max-width: 1440px; }
 
-    /* Sidebar Toggle Button - Optimized Visibility */
+    /* ── Sidebar Toggle Button — always visible, high z-index ── */
     [data-testid="stSidebarCollapseButton"] {
         background-color: var(--purple) !important;
         color: white !important;
         border-radius: 8px !important;
+        position: fixed !important;
         left: 10px !important;
         top: 10px !important;
         z-index: 1000000 !important;
         display: flex !important;
-        box-shadow: 0 4px 15px rgba(124, 77, 255, 0.4) !important;
+        align-items: center !important;
+        justify-content: center !important;
+        width: 36px !important;
+        height: 36px !important;
+        box-shadow: 0 4px 15px rgba(124, 77, 255, 0.45) !important;
+        border: none !important;
+        cursor: pointer !important;
+        transition: background .2s, box-shadow .2s !important;
+    }
+    [data-testid="stSidebarCollapseButton"]:hover {
+        background-color: var(--purple-lt) !important;
+        box-shadow: 0 6px 20px rgba(124, 77, 255, 0.65) !important;
     }
     [data-testid="stSidebarCollapseButton"] svg {
         fill: white !important;
+        stroke: white !important;
     }
 
-    /* Sidebar Styling */
+    /* ── Sidebar ── */
     [data-testid="stSidebar"] {
         background: rgba(8, 8, 14, 0.97) !important;
         border-right: 1px solid var(--border) !important;
         backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
     }
-    [data-testid="stSidebar"] * { color: rgba(232, 232, 244, 0.8) !important; }
+    [data-testid="stSidebar"] * { color: rgba(232, 232, 244, 0.85) !important; }
+    [data-testid="stSidebar"] .stSelectbox label { color: var(--muted) !important; font-size: 12px !important; }
 
-    /* Typography */
+    .sidebar-brand {
+        padding: 20px 16px 12px;
+        border-bottom: 1px solid var(--border);
+        margin-bottom: 16px;
+    }
+    .sidebar-brand h2 {
+        font-size: 1.25rem !important;
+        font-weight: 800 !important;
+        color: var(--purple-lt) !important;
+        margin: 0 0 4px !important;
+        letter-spacing: -.02em;
+    }
+    .sidebar-brand p {
+        font-size: 11px !important;
+        color: var(--muted) !important;
+        margin: 0 !important;
+        letter-spacing: .06em;
+        text-transform: uppercase;
+    }
+    .user-pill {
+        background: rgba(124, 77, 255, 0.12);
+        border: 1px solid var(--border);
+        border-radius: 50px;
+        padding: 6px 14px;
+        font-size: 12px;
+        font-weight: 600;
+        color: var(--purple-lt) !important;
+        text-align: center;
+        margin-bottom: 12px;
+    }
+
+    /* ── Typography ── */
     h1, h2, h3 { font-family: 'Outfit', sans-serif !important; letter-spacing: -.03em; }
     h1 { font-size: 2.1rem !important; font-weight: 900 !important; }
     h2 { font-size: 1.4rem !important; font-weight: 700 !important; color: var(--purple-lt) !important; }
     h3 { font-size: 1.1rem !important; font-weight: 600 !important; }
 
-    /* UI Cards */
+    /* ── Welcome Banner ── */
+    .welcome-banner {
+        background: linear-gradient(135deg, rgba(124,77,255,0.22) 0%, rgba(77,159,255,0.12) 60%, rgba(0,229,160,0.06) 100%);
+        border: 1px solid rgba(124, 77, 255, 0.25);
+        border-radius: 20px;
+        padding: 36px 40px;
+        margin-bottom: 28px;
+        position: relative;
+        overflow: hidden;
+    }
+    .welcome-banner::before {
+        content: '';
+        position: absolute;
+        top: -60px; right: -60px;
+        width: 220px; height: 220px;
+        background: radial-gradient(circle, rgba(124,77,255,0.18) 0%, transparent 70%);
+        border-radius: 50%;
+        pointer-events: none;
+    }
+    .welcome-banner h1 {
+        font-size: 2rem !important;
+        font-weight: 900 !important;
+        color: var(--text) !important;
+        margin: 0 0 8px !important;
+    }
+    .welcome-banner p {
+        color: var(--muted);
+        font-size: 15px;
+        margin: 0;
+    }
+
+    /* ── Glass Card ── */
     .glass-card {
         background: var(--bg-card);
         border: 1px solid var(--border);
@@ -267,10 +343,247 @@ def inject_css():
     .glass-card:hover {
         border-color: var(--border-hover);
         transform: translateY(-2px);
-        box-shadow: 0 1
+        box-shadow: 0 12px 40px rgba(124, 77, 255, 0.12);
+    }
 
+    /* ── Stat Cards ── */
+    .stat-card {
+        background: var(--bg-card);
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        padding: 20px 22px;
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        transition: all .25s;
+        margin-bottom: 12px;
+    }
+    .stat-card:hover {
+        border-color: var(--border-hover);
+        transform: translateY(-3px);
+        box-shadow: 0 10px 30px rgba(124, 77, 255, 0.15);
+    }
+    .stat-card .icon { font-size: 1.6rem; margin-bottom: 10px; }
+    .stat-card .label { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: .07em; margin-bottom: 6px; }
+    .stat-card .value { font-family: 'Outfit', sans-serif; font-size: 2rem; font-weight: 900; color: #fff; line-height: 1; }
+    .stat-card .sub   { font-size: 12px; color: var(--muted); margin-top: 4px; }
 
+    .stat-card.purple { border-color: rgba(124,77,255,0.35); }
+    .stat-card.purple .value { color: var(--purple-lt); }
+    .stat-card.green  { border-color: rgba(0,229,160,0.25); }
+    .stat-card.green  .value { color: var(--green); }
+    .stat-card.orange { border-color: rgba(255,140,66,0.25); }
+    .stat-card.orange .value { color: var(--orange); }
+    .stat-card.blue   { border-color: rgba(77,159,255,0.25); }
+    .stat-card.blue   .value { color: var(--blue); }
 
+    /* ── Badges ── */
+    .badge {
+        display: inline-block;
+        padding: 3px 11px;
+        border-radius: 50px;
+        font-size: 11px;
+        font-weight: 600;
+        letter-spacing: .04em;
+    }
+    .badge-gray   { background: rgba(255,255,255,0.08); color: rgba(232,232,244,0.6); }
+    .badge-blue   { background: rgba(77,159,255,0.15);  color: var(--blue); }
+    .badge-purple { background: rgba(124,77,255,0.18);  color: var(--purple-lt); }
+    .badge-orange { background: rgba(255,140,66,0.15);  color: var(--orange); }
+    .badge-green  { background: rgba(0,229,160,0.15);   color: var(--green); }
+    .badge-red    { background: rgba(255,80,80,0.15);   color: #ff8080; }
+
+    /* ── Pipeline Stages ── */
+    .stage-row {
+        display: flex;
+        gap: 6px;
+        flex-wrap: wrap;
+        margin: 10px 0 16px;
+    }
+    .stage-chip {
+        padding: 5px 14px;
+        border-radius: 50px;
+        font-size: 11px;
+        font-weight: 600;
+        background: rgba(255,255,255,0.05);
+        color: var(--muted);
+        border: 1px solid rgba(255,255,255,0.08);
+    }
+    .stage-chip.done {
+        background: rgba(0,229,160,0.12);
+        color: var(--green);
+        border-color: rgba(0,229,160,0.25);
+    }
+    .stage-chip.active {
+        background: rgba(124,77,255,0.2);
+        color: var(--purple-lt);
+        border-color: rgba(124,77,255,0.45);
+        box-shadow: 0 0 12px rgba(124,77,255,0.2);
+    }
+
+    /* ── Progress Bar ── */
+    .prog-wrap {
+        background: rgba(255,255,255,0.06);
+        border-radius: 50px;
+        height: 6px;
+        overflow: hidden;
+        margin-top: 6px;
+    }
+    .prog-fill {
+        height: 100%;
+        border-radius: 50px;
+        background: linear-gradient(90deg, var(--purple), var(--purple-lt));
+        transition: width .6s cubic-bezier(.4,0,.2,1);
+    }
+
+    /* ── Candidate Table ── */
+    .cand-table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0;
+        font-size: 13px;
+        margin-top: 12px;
+    }
+    .cand-table thead tr {
+        background: rgba(124,77,255,0.08);
+    }
+    .cand-table th {
+        padding: 10px 14px;
+        text-align: left;
+        font-size: 11px;
+        font-weight: 600;
+        color: var(--muted);
+        text-transform: uppercase;
+        letter-spacing: .07em;
+        border-bottom: 1px solid var(--border);
+    }
+    .cand-table td {
+        padding: 12px 14px;
+        border-bottom: 1px solid rgba(124,77,255,0.07);
+        vertical-align: middle;
+    }
+    .cand-table tbody tr { transition: background .15s; }
+    .cand-table tbody tr:hover { background: rgba(124,77,255,0.05); }
+
+    /* ── Match Card ── */
+    .match-card {
+        background: var(--bg-card);
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        padding: 16px 20px;
+        margin-bottom: 12px;
+        transition: all .2s;
+    }
+    .match-card:hover {
+        border-color: var(--border-hover);
+        transform: translateY(-1px);
+    }
+
+    /* ── Section Title ── */
+    .section-title {
+        font-family: 'Outfit', sans-serif;
+        font-size: 1rem;
+        font-weight: 700;
+        color: var(--purple-lt);
+        margin-bottom: 16px;
+        letter-spacing: -.01em;
+    }
+
+    /* ── Streamlit Overrides ── */
+    .stTextInput > div > div > input,
+    .stTextArea > div > div > textarea,
+    .stSelectbox > div > div > div {
+        background: rgba(12,12,18,0.9) !important;
+        border: 1px solid var(--border) !important;
+        border-radius: 10px !important;
+        color: var(--text) !important;
+        font-family: 'Outfit', sans-serif !important;
+    }
+    .stTextInput > div > div > input:focus,
+    .stTextArea > div > div > textarea:focus {
+        border-color: var(--purple) !important;
+        box-shadow: 0 0 0 2px rgba(124,77,255,0.15) !important;
+    }
+    .stButton > button {
+        background: linear-gradient(135deg, var(--purple), #5c2dff) !important;
+        color: white !important;
+        border: none !important;
+        border-radius: 10px !important;
+        font-family: 'Outfit', sans-serif !important;
+        font-weight: 600 !important;
+        transition: all .2s !important;
+        padding: 10px 20px !important;
+    }
+    .stButton > button:hover {
+        transform: translateY(-1px) !important;
+        box-shadow: 0 6px 20px rgba(124,77,255,0.4) !important;
+    }
+    .stButton > button[kind="secondary"] {
+        background: rgba(124,77,255,0.12) !important;
+        border: 1px solid var(--border) !important;
+        color: var(--purple-lt) !important;
+    }
+    .stTabs [data-baseweb="tab-list"] {
+        background: rgba(12,12,18,0.8) !important;
+        border-radius: 12px !important;
+        gap: 4px !important;
+        padding: 4px !important;
+        border: 1px solid var(--border) !important;
+    }
+    .stTabs [data-baseweb="tab"] {
+        border-radius: 9px !important;
+        font-family: 'Outfit', sans-serif !important;
+        font-weight: 500 !important;
+        color: var(--muted) !important;
+        background: transparent !important;
+    }
+    .stTabs [aria-selected="true"] {
+        background: rgba(124,77,255,0.22) !important;
+        color: var(--purple-lt) !important;
+    }
+    .stMetric {
+        background: rgba(12,12,18,0.7) !important;
+        border: 1px solid var(--border) !important;
+        border-radius: 12px !important;
+        padding: 14px !important;
+    }
+    .stMetric label { color: var(--muted) !important; font-size: 11px !important; }
+    .stMetric [data-testid="stMetricValue"] { color: var(--text) !important; font-family: 'Outfit', sans-serif !important; font-weight: 800 !important; }
+    .stExpander {
+        background: var(--bg-card) !important;
+        border: 1px solid var(--border) !important;
+        border-radius: 12px !important;
+    }
+    .stExpander summary { color: var(--text) !important; font-weight: 600 !important; }
+    .stFileUploader {
+        background: rgba(12,12,18,0.7) !important;
+        border: 1px dashed var(--border) !important;
+        border-radius: 12px !important;
+        padding: 12px !important;
+    }
+    .stDataFrame { border-radius: 12px !important; overflow: hidden !important; }
+    .stDivider { border-color: var(--border) !important; }
+    code {
+        background: rgba(124,77,255,0.1) !important;
+        color: var(--purple-lt) !important;
+        border-radius: 4px !important;
+        padding: 2px 6px !important;
+        font-family: 'JetBrains Mono', monospace !important;
+    }
+    pre {
+        background: rgba(5,5,7,0.95) !important;
+        border: 1px solid var(--border) !important;
+        border-radius: 12px !important;
+        color: var(--text) !important;
+        font-family: 'JetBrains Mono', monospace !important;
+    }
+
+    /* ── Scrollbar ── */
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: rgba(255,255,255,0.02); }
+    ::-webkit-scrollbar-thumb { background: rgba(124,77,255,0.35); border-radius: 50px; }
+    ::-webkit-scrollbar-thumb:hover { background: var(--purple); }
+    </style>
+    """, unsafe_allow_html=True)
 
 
 # ============================================================
@@ -351,11 +664,17 @@ def calc_govt_score(resume_text: str, rules: dict):
     score = 0
     found, missing = [], []
     for s in rules["skills"]:
-        if s in rl: found.append(s); score += 10
-        else: missing.append(s)
+        if s in rl:
+            found.append(s)
+            score += 10
+        else:
+            missing.append(s)
     for c in rules["certifications"]:
-        if c in rl: found.append(c); score += 15
-        else: missing.append(c)
+        if c in rl:
+            found.append(c)
+            score += 15
+        else:
+            missing.append(c)
     return min(score, 100), found, missing
 
 
@@ -373,14 +692,20 @@ def detect_best_sector(resume_text: str):
 
 def get_recs(resume_text: str, top_n: int = 5):
     df = db_query("SELECT * FROM jobs")
-    if df.empty: return []
+    if df.empty:
+        return []
     rl = resume_text.lower()
     results = []
     for _, job in df.iterrows():
         jw = set(str(job["jd"]).lower().split())
         rw = set(rl.split())
         pct = min(int((len(jw & rw) / max(len(jw), 1)) * 300), 100)
-        results.append({"job_id": job["id"], "role": job["role"], "company": job["company"], "match_pct": pct})
+        results.append({
+            "job_id": job["id"],
+            "role": job["role"],
+            "company": job["company"],
+            "match_pct": pct
+        })
     return sorted(results, key=lambda x: x["match_pct"], reverse=True)[:top_n]
 
 
@@ -389,7 +714,8 @@ def parse_ai_score(text: str) -> int:
         for line in text.splitlines():
             if "SCORE" in line.upper():
                 digits = "".join(filter(str.isdigit, line))
-                if digits: return min(int(digits), 100)
+                if digits:
+                    return min(int(digits), 100)
     except Exception:
         pass
     return 50
@@ -452,9 +778,12 @@ def send_email(to: str, subj: str, body: str) -> bool:
 
 
 def validate_resume(f) -> tuple:
-    if not f: return False, "No file uploaded."
-    if not f.name.lower().endswith(".pdf"): return False, "❌ Only PDF files are allowed."
-    if f.size / 1024 / 1024 > MAX_RESUME_SIZE_MB: return False, f"❌ File too large. Limit is {MAX_RESUME_SIZE_MB} MB."
+    if not f:
+        return False, "No file uploaded."
+    if not f.name.lower().endswith(".pdf"):
+        return False, "❌ Only PDF files are allowed."
+    if f.size / 1024 / 1024 > MAX_RESUME_SIZE_MB:
+        return False, f"❌ File too large. Limit is {MAX_RESUME_SIZE_MB} MB."
     return True, ""
 
 
@@ -468,23 +797,27 @@ def save_resume(f, name: str) -> str:
 
 def get_resume_bytes(path: str):
     if path and os.path.exists(path):
-        with open(path, "rb") as f: return f.read()
+        with open(path, "rb") as f:
+            return f.read()
     return None
 
 
 def extract_pdf_text(uploaded_file) -> str:
-    if not PDF_AVAILABLE: return ""
+    if not PDF_AVAILABLE:
+        return ""
     try:
         reader = PdfReader(uploaded_file)
         return "".join([page.extract_text() or "" for page in reader.pages])
-    except Exception: return ""
+    except Exception:
+        return ""
 
 
 def auto_shortlist(threshold: int = SHORTLIST_THRESHOLD) -> int:
     engine = get_engine()
     with engine.connect() as conn:
         result = conn.execute(text(
-            "UPDATE applications SET status='Shortlisted' WHERE sector_match_score >= :t AND (status='Applied' OR status IS NULL)"
+            "UPDATE applications SET status='Shortlisted' "
+            "WHERE sector_match_score >= :t AND (status='Applied' OR status IS NULL)"
         ), {"t": threshold})
         n = result.rowcount
         conn.commit()
@@ -511,6 +844,7 @@ def accept_contract(app_id: int):
 
 
 def calc_prob(ai_score, sec_score) -> int:
+    """Placement Probability = 60% AI Score + 40% Sector Match Score."""
     return min(int((ai_score or 0) * 0.6 + (sec_score or 0) * 0.4), 100)
 
 
@@ -521,21 +855,22 @@ def prob_lbl(p) -> str:
 
 def tips(missing: list, sector: str) -> list:
     sector_tips = {
-        "IT & Digital Governance": ["🔧 Build a GitHub project","📚 Get AWS/Azure certified","💻 Practice DSA on LeetCode"],
-        "Core Engineering": ["🛠 Add a CAD portfolio project","📐 Get SolidWorks certified","🔌 Build an IoT project"],
-        "Infrastructure & Green Energy": ["☀️ Complete Suryamitra certification","🏗 Add a BIM project","📊 Learn SAP basics"],
-        "Public Administration": ["📜 Add governance internships","🏛 Note UPSC preparation experience","📊 Learn Excel for public finance"],
-        "Management & Finance": ["📈 Learn Tableau or Power BI","💼 Add an HR/sales internship","🧾 Complete Tally/SAP basics"],
+        "IT & Digital Governance":    ["🔧 Build a GitHub project", "📚 Get AWS/Azure certified", "💻 Practice DSA on LeetCode"],
+        "Core Engineering":           ["🛠 Add a CAD portfolio project", "📐 Get SolidWorks certified", "🔌 Build an IoT project"],
+        "Infrastructure & Green Energy": ["☀️ Complete Suryamitra certification", "🏗 Add a BIM project", "📊 Learn SAP basics"],
+        "Public Administration":      ["📜 Add governance internships", "🏛 Note UPSC preparation experience", "📊 Learn Excel for public finance"],
+        "Management & Finance":       ["📈 Learn Tableau or Power BI", "💼 Add an HR/sales internship", "🧾 Complete Tally/SAP basics"],
     }
     out = list(sector_tips.get(sector, []))
-    for sk in (missing or [])[:3]: out.append(f"➕ Add '{sk}' to your skill set")
+    for sk in (missing or [])[:3]:
+        out.append(f"➕ Add '{sk}' to your skill set")
     return out[:5]
 
 
 # ============================================================
 # 8. CHARTS
 # ============================================================
-CHART_COLORS = ["#7c4dff","#a87fff","#00e5a0","#ff8c42","#4d9fff","#ec4899","#f59e0b"]
+CHART_COLORS = ["#7c4dff", "#a87fff", "#00e5a0", "#ff8c42", "#4d9fff", "#ec4899", "#f59e0b"]
 
 
 def doughnut(labels, values, title):
@@ -548,8 +883,10 @@ def doughnut(labels, values, title):
         title_text=title,
         title_font=dict(color="#a87fff", family="Outfit", size=14),
         showlegend=False,
-        margin=dict(t=40, b=10, l=10, r=10), height=260,
-        paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)",
+        margin=dict(t=40, b=10, l=10, r=10),
+        height=260,
+        paper_bgcolor="rgba(0,0,0,0)",
+        plot_bgcolor="rgba(0,0,0,0)",
         font=dict(color="#888", family="Outfit"),
     )
     return fig
@@ -567,7 +904,8 @@ def skill_gap_radar(skill_counts: dict):
 
     fig = go.Figure()
     fig.add_trace(go.Scatterpolar(
-        r=counts_closed, theta=skills_closed,
+        r=counts_closed,
+        theta=skills_closed,
         fill='toself',
         fillcolor='rgba(124,77,255,0.15)',
         line=dict(color='#7c4dff', width=2),
@@ -577,8 +915,15 @@ def skill_gap_radar(skill_counts: dict):
     fig.update_layout(
         polar=dict(
             bgcolor='rgba(0,0,0,0)',
-            radialaxis=dict(visible=True, color='rgba(255,255,255,0.2)', gridcolor='rgba(255,255,255,0.08)'),
-            angularaxis=dict(color='rgba(255,255,255,0.5)', gridcolor='rgba(255,255,255,0.08)')
+            radialaxis=dict(
+                visible=True,
+                color='rgba(255,255,255,0.2)',
+                gridcolor='rgba(255,255,255,0.08)'
+            ),
+            angularaxis=dict(
+                color='rgba(255,255,255,0.5)',
+                gridcolor='rgba(255,255,255,0.08)'
+            )
         ),
         paper_bgcolor='rgba(0,0,0,0)',
         plot_bgcolor='rgba(0,0,0,0)',
@@ -591,8 +936,9 @@ def skill_gap_radar(skill_counts: dict):
 
 
 def skill_gap_bars(skill_counts: dict):
-    """Horizontal progress bars as an alternative to bar chart."""
-    if not skill_counts: return ""
+    """Horizontal progress bars for skill gap visualisation."""
+    if not skill_counts:
+        return ""
     items = sorted(skill_counts.items(), key=lambda x: x[1], reverse=True)[:10]
     max_v = max(v for _, v in items) or 1
     html = ""
@@ -649,13 +995,13 @@ def show_auth():
                 role = login_user(uname, pwd)
                 if role:
                     st.session_state.logged_in = True
-                    st.session_state.role = role
-                    st.session_state.username = uname
+                    st.session_state.role      = role
+                    st.session_state.username  = uname
                     st.rerun()
                 else:
                     st.error("❌ Invalid credentials.")
             st.markdown(
-                '<div style="text-align:center;margin-top:10px;font-size:12px;color:#333;">'
+                '<div style="text-align:center;margin-top:10px;font-size:12px;color:#555;">'
                 'Default admin: <code style="color:#a87fff">admin / admin123</code></div>',
                 unsafe_allow_html=True
             )
@@ -668,15 +1014,21 @@ def show_auth():
             rc1, rc2 = st.columns(2)
 
             def _reg(rl):
-                if len(np_) < 6: st.error("Password must be ≥ 6 characters.")
-                elif not nu.strip(): st.error("Username cannot be empty.")
-                elif register_user(nu.strip(), np_, rl): st.success(f"✅ Registered as **{rl}**! Please login.")
-                else: st.error("Username already taken.")
+                if len(np_) < 6:
+                    st.error("Password must be at least 6 characters.")
+                elif not nu.strip():
+                    st.error("Username cannot be empty.")
+                elif register_user(nu.strip(), np_, rl):
+                    st.success(f"✅ Registered as **{rl}**! Please login.")
+                else:
+                    st.error("Username already taken.")
 
             with rc1:
-                if st.button("🎓 Student", use_container_width=True): _reg("student")
+                if st.button("🎓 Student", use_container_width=True):
+                    _reg("student")
             with rc2:
-                if st.button("🛡️ Admin", type="secondary", use_container_width=True): _reg("admin")
+                if st.button("🛡️ Admin", type="secondary", use_container_width=True):
+                    _reg("admin")
 
 
 # ============================================================
@@ -706,26 +1058,33 @@ def show_app():
     # ── HR: CREATE DRIVE ─────────────────────────────────────
     elif choice == "HR: Create Drive":
         st.markdown(
-            '<div class="welcome-banner"><h1>📢 Post a Placement Drive</h1>'
-            '<p>Create new job openings for students to apply and get AI-matched.</p></div>',
+            '<div class="welcome-banner">'
+            '<h1>📢 Post a Placement Drive</h1>'
+            '<p>Create new job openings for students to apply and get AI-matched.</p>'
+            '</div>',
             unsafe_allow_html=True
         )
         st.markdown('<div class="glass-card">', unsafe_allow_html=True)
         company = st.text_input("Company Name", placeholder="e.g. Infosys, DRDO, BHEL")
-        role_in = st.text_input("Job Role", placeholder="e.g. Software Engineer")
-        jd      = st.text_area("Job Description", height=180, placeholder="Describe required skills and responsibilities...")
+        role_in = st.text_input("Job Role",     placeholder="e.g. Software Engineer")
+        jd      = st.text_area("Job Description", height=180,
+                                placeholder="Describe required skills and responsibilities...")
         if st.button("🚀 Post Drive", type="primary"):
             if company and role_in and jd:
-                db_exec("INSERT INTO jobs (role, company, jd) VALUES (:r, :c, :j)",
-                        {"r": role_in.strip(), "c": company.strip(), "j": jd.strip()})
+                db_exec(
+                    "INSERT INTO jobs (role, company, jd) VALUES (:r, :c, :j)",
+                    {"r": role_in.strip(), "c": company.strip(), "j": jd.strip()}
+                )
                 st.success(f"✅ Drive posted for **{company}**!")
             else:
                 st.error("Please fill all fields.")
         st.divider()
         st.markdown("#### 📋 Active Drives")
         df = db_query("SELECT id, company, role, jd FROM jobs")
-        if not df.empty: st.dataframe(df, use_container_width=True, hide_index=True)
-        else: st.info("No drives posted yet.")
+        if not df.empty:
+            st.dataframe(df, use_container_width=True, hide_index=True)
+        else:
+            st.info("No drives posted yet.")
         st.markdown('</div>', unsafe_allow_html=True)
 
     # ── STUDENT PORTAL ────────────────────────────────────────
@@ -740,7 +1099,8 @@ def show_app():
                WHERE a.student_name LIKE :u""",
             {"u": f"%{username}%"}
         )
-        if "status" not in my_apps.columns: my_apps["status"] = "Applied"
+        if "status" not in my_apps.columns:
+            my_apps["status"] = "Applied"
         my_apps["status"] = my_apps["status"].fillna("Applied")
 
         total     = len(my_apps)
@@ -749,16 +1109,18 @@ def show_app():
         offered   = len(my_apps[my_apps["status"] == "Offered"])
 
         st.markdown(
-            f'<div class="welcome-banner"><h1>Welcome Back, {username.title()}! 👋</h1>'
-            '<p>Your career journey starts here. Track and manage your applications seamlessly.</p></div>',
+            f'<div class="welcome-banner">'
+            f'<h1>Welcome Back, {username.title()}! 👋</h1>'
+            f'<p>Your career journey starts here. Track and manage your applications seamlessly.</p>'
+            f'</div>',
             unsafe_allow_html=True
         )
 
         c1, c2, c3, c4 = st.columns(4)
-        with c1: st.markdown(stat_card("📤", "Total Applications", total,    "All submitted",  "purple"), unsafe_allow_html=True)
-        with c2: st.markdown(stat_card("🔄", "Active Applications", active,  "In progress",    "blue"),   unsafe_allow_html=True)
-        with c3: st.markdown(stat_card("🗓️", "Waiting Interview",  interview,"In queue",       "orange"), unsafe_allow_html=True)
-        with c4: st.markdown(stat_card("🎉", "Offers Received",    offered,  "From employers", "green"),  unsafe_allow_html=True)
+        with c1: st.markdown(stat_card("📤", "Total Applications", total,     "All submitted",  "purple"), unsafe_allow_html=True)
+        with c2: st.markdown(stat_card("🔄", "Active Applications", active,   "In progress",    "blue"),   unsafe_allow_html=True)
+        with c3: st.markdown(stat_card("🗓️", "Waiting Interview",  interview, "In queue",       "orange"), unsafe_allow_html=True)
+        with c4: st.markdown(stat_card("🎉", "Offers Received",    offered,   "From employers", "green"),  unsafe_allow_html=True)
 
         st.markdown("<br>", unsafe_allow_html=True)
         t1, t2, t3 = st.tabs(["📤  Apply Now", "🔍  Track Status", "💡  Job Matches"])
@@ -776,9 +1138,12 @@ def show_app():
 
                 if st.button("🚀 Submit Application", type="primary"):
                     ok, err = validate_resume(file)
-                    if not ok: st.error(err)
-                    elif not name.strip(): st.error("Enter your full name.")
-                    elif not email.strip() or "@" not in email: st.error("Enter a valid email address.")
+                    if not ok:
+                        st.error(err)
+                    elif not name.strip():
+                        st.error("Enter your full name.")
+                    elif not email.strip() or "@" not in email:
+                        st.error("Enter a valid email address.")
                     else:
                         resume_text = extract_pdf_text(file)
                         rpath       = save_resume(file, name.strip())
@@ -786,13 +1151,13 @@ def show_app():
 
                         with st.spinner("🤖 AI is analysing your profile..."):
                             sector, gscore, (found, missing) = detect_best_sector(resume_text)
-                            ai_result  = screen_with_gemini(resume_text, tjd)
-                            gscore_ai  = parse_ai_score(ai_result)
-                            final      = int(gscore * 0.7 + gscore_ai * 0.3)
-                            prob       = calc_prob(final, gscore)
-                            lbl        = prob_lbl(prob)
+                            ai_result = screen_with_gemini(resume_text, tjd)
+                            gscore_ai = parse_ai_score(ai_result)
+                            final     = int(gscore * 0.7 + gscore_ai * 0.3)
+                            prob      = calc_prob(final, gscore)
+                            lbl       = prob_lbl(prob)
                             suggestion = tips(missing, sector)
-                            feedback   = (
+                            feedback  = (
                                 f"{ai_result}\n\n"
                                 f"Sector: {sector}\n"
                                 f"Found: {found}\n"
@@ -825,33 +1190,57 @@ def show_app():
 
                         st.markdown(f"""
                         <div class="glass-card" style="margin-top:16px;">
-                          <div style="font-family:'Outfit',sans-serif;font-size:1.05rem;font-weight:700;color:#a87fff;margin-bottom:16px;">🎯 National Readiness Report</div>
+                          <div style="font-family:'Outfit',sans-serif;font-size:1.05rem;font-weight:700;
+                                      color:#a87fff;margin-bottom:16px;">
+                            🎯 National Readiness Report
+                          </div>
                           <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px;">
-                            <div style="background:rgba(5,5,7,0.7);border:1px solid var(--border);border-radius:10px;padding:14px;">
-                              <div style="color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px;">Sector Fit</div>
+                            <div style="background:rgba(5,5,7,0.7);border:1px solid var(--border);
+                                        border-radius:10px;padding:14px;">
+                              <div style="color:var(--muted);font-size:11px;text-transform:uppercase;
+                                          letter-spacing:.06em;margin-bottom:4px;">Sector Fit</div>
                               <div style="color:#a87fff;font-weight:600;">{sector}</div>
                             </div>
-                            <div style="background:rgba(5,5,7,0.7);border:1px solid var(--border);border-radius:10px;padding:14px;">
-                              <div style="color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px;">Hybrid Score</div>
-                              <div style="font-family:'Outfit',sans-serif;font-size:1.8rem;font-weight:900;color:#fff;">{final}<span style="font-size:.85rem;color:var(--muted)">/100</span></div>
+                            <div style="background:rgba(5,5,7,0.7);border:1px solid var(--border);
+                                        border-radius:10px;padding:14px;">
+                              <div style="color:var(--muted);font-size:11px;text-transform:uppercase;
+                                          letter-spacing:.06em;margin-bottom:4px;">Hybrid Score</div>
+                              <div style="font-family:'Outfit',sans-serif;font-size:1.8rem;font-weight:900;
+                                          color:#fff;">{final}
+                                <span style="font-size:.85rem;color:var(--muted)">/100</span>
+                              </div>
                             </div>
-                            <div style="background:rgba(5,5,7,0.7);border:1px solid var(--border);border-radius:10px;padding:14px;">
-                              <div style="color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px;">Sector Match</div>
-                              <div style="font-family:'Outfit',sans-serif;font-size:1.8rem;font-weight:900;color:#00e5a0;">{gscore}<span style="font-size:.85rem;color:var(--muted)">/100</span></div>
+                            <div style="background:rgba(5,5,7,0.7);border:1px solid var(--border);
+                                        border-radius:10px;padding:14px;">
+                              <div style="color:var(--muted);font-size:11px;text-transform:uppercase;
+                                          letter-spacing:.06em;margin-bottom:4px;">Sector Match</div>
+                              <div style="font-family:'Outfit',sans-serif;font-size:1.8rem;font-weight:900;
+                                          color:#00e5a0;">{gscore}
+                                <span style="font-size:.85rem;color:var(--muted)">/100</span>
+                              </div>
                             </div>
-                            <div style="background:rgba(5,5,7,0.7);border:1px solid var(--border);border-radius:10px;padding:14px;">
-                              <div style="color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px;">Placement Probability</div>
-                              <div style="font-family:'Outfit',sans-serif;font-size:1.8rem;font-weight:900;color:{prob_color};">{prob}%</div>
+                            <div style="background:rgba(5,5,7,0.7);border:1px solid var(--border);
+                                        border-radius:10px;padding:14px;">
+                              <div style="color:var(--muted);font-size:11px;text-transform:uppercase;
+                                          letter-spacing:.06em;margin-bottom:4px;">Placement Probability</div>
+                              <div style="font-family:'Outfit',sans-serif;font-size:1.8rem;font-weight:900;
+                                          color:{prob_color};">{prob}%</div>
                               <div style="font-size:12px;color:var(--muted);margin-top:2px;">{lbl}</div>
                             </div>
                           </div>
-                          <div style="color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px;">Skills Found</div>
+                          <div style="color:var(--muted);font-size:11px;text-transform:uppercase;
+                                      letter-spacing:.06em;margin-bottom:8px;">Skills Found</div>
                           <div>{found_badges}</div>
                         </div>""", unsafe_allow_html=True)
 
                         if suggestion:
-                            st.markdown('<div class="glass-card"><div class="section-title">📌 How to Improve Your Probability</div>', unsafe_allow_html=True)
-                            for tip in suggestion: st.markdown(f"- {tip}")
+                            st.markdown(
+                                '<div class="glass-card">'
+                                '<div class="section-title">📌 How to Improve Your Probability</div>',
+                                unsafe_allow_html=True
+                            )
+                            for tip in suggestion:
+                                st.markdown(f"- {tip}")
                             st.markdown('</div>', unsafe_allow_html=True)
 
                 st.markdown('</div>', unsafe_allow_html=True)
@@ -861,7 +1250,11 @@ def show_app():
         # ── Track Status ──────────────────────────────────────
         with t2:
             st.markdown('<div class="glass-card">', unsafe_allow_html=True)
-            search = st.text_input("🔍 Search by name", placeholder="Enter your full name...", key="trk")
+            search = st.text_input(
+                "🔍 Search by name",
+                placeholder="Enter your full name...",
+                key="trk"
+            )
             if search:
                 res = db_query(
                     """SELECT a.id, a.ai_score, a.feedback, j.company, j.role,
@@ -880,15 +1273,23 @@ def show_app():
                             cur    = row["status"] if row["status"] in stages else "Applied"
                             idx    = stages.index(cur)
                             chips  = "".join([
-                                f'<div class="stage-chip {"done" if i < idx else "active" if i == idx else ""}">{s}</div>'
+                                f'<div class="stage-chip '
+                                f'{"done" if i < idx else "active" if i == idx else ""}">'
+                                f'{s}</div>'
                                 for i, s in enumerate(stages)
                             ])
                             st.markdown(f'<div class="stage-row">{chips}</div>', unsafe_allow_html=True)
+
                             m1, m2, m3 = st.columns(3)
-                            with m1: st.metric("AI Score", f"{row['ai_score'] or 0}/100")
-                            with m2: st.metric("Sector Match", f"{row['sector_match_score'] or 0}/100")
-                            with m3: st.metric("Placement Probability", f"{row['placement_probability'] or 0}%", prob_lbl(row['placement_probability'] or 0))
-                            st.markdown(f"**Sector:** {row['sector'] or '—'}  **Status:** {status_badge(cur)}", unsafe_allow_html=True)
+                            with m1: st.metric("AI Score",              f"{row['ai_score'] or 0}/100")
+                            with m2: st.metric("Sector Match",          f"{row['sector_match_score'] or 0}/100")
+                            with m3: st.metric("Placement Probability", f"{row['placement_probability'] or 0}%",
+                                               prob_lbl(row['placement_probability'] or 0))
+
+                            st.markdown(
+                                f"**Sector:** {row['sector'] or '—'} &nbsp; **Status:** {status_badge(cur)}",
+                                unsafe_allow_html=True
+                            )
 
                             if cur == "Offered":
                                 st.divider()
@@ -902,6 +1303,7 @@ def show_app():
                                         st.success("🎉 Contract accepted!")
                                         st.balloons()
                                         st.rerun()
+
                             with st.expander("📊 AI Feedback"):
                                 st.write(row["feedback"] or "No feedback available.")
                 else:
@@ -910,12 +1312,17 @@ def show_app():
 
         # ── Job Matches ───────────────────────────────────────
         with t3:
-            st.markdown('<div class="glass-card"><div class="section-title">💡 Jobs Matched to Your Profile</div>', unsafe_allow_html=True)
+            st.markdown(
+                '<div class="glass-card">'
+                '<div class="section-title">💡 Jobs Matched to Your Profile</div>',
+                unsafe_allow_html=True
+            )
             st.caption("Upload your resume to see personalised job matches ranked by compatibility.")
             rf = st.file_uploader("Upload Resume (PDF)", type=["pdf"], key="rec")
             if rf:
                 ok, err = validate_resume(rf)
-                if not ok: st.error(err)
+                if not ok:
+                    st.error(err)
                 else:
                     rt   = extract_pdf_text(rf)
                     recs = get_recs(rt)
@@ -923,15 +1330,21 @@ def show_app():
                         for r in recs:
                             color = "#7c4dff" if r["match_pct"] >= 60 else "#ff8c42" if r["match_pct"] >= 30 else "#ff8080"
                             badge = "badge-purple" if r["match_pct"] >= 60 else "badge-orange" if r["match_pct"] >= 30 else "badge-red"
-                            st.markdown(f"""<div class="match-card">
+                            st.markdown(f"""
+                            <div class="match-card">
                               <div style="display:flex;justify-content:space-between;align-items:center;">
                                 <div>
-                                  <div style="font-family:'Outfit',sans-serif;font-weight:700;color:var(--text);">{r['role']}</div>
-                                  <div style="color:var(--muted);font-size:13px;margin-top:2px;">🏢 {r['company']}</div>
+                                  <div style="font-family:'Outfit',sans-serif;font-weight:700;
+                                              color:var(--text);">{r['role']}</div>
+                                  <div style="color:var(--muted);font-size:13px;margin-top:2px;">
+                                    🏢 {r['company']}
+                                  </div>
                                 </div>
                                 <span class="badge {badge}">{r['match_pct']}% match</span>
                               </div>
-                              <div class="prog-wrap"><div class="prog-fill" style="width:{r['match_pct']}%;background:{color};"></div></div>
+                              <div class="prog-wrap">
+                                <div class="prog-fill" style="width:{r['match_pct']}%;background:{color};"></div>
+                              </div>
                             </div>""", unsafe_allow_html=True)
                     else:
                         st.warning("No active drives found. Ask your TPO to post drives first.")
@@ -940,8 +1353,10 @@ def show_app():
     # ── TPO DASHBOARD ─────────────────────────────────────────
     elif choice == "TPO: Dashboard":
         st.markdown(
-            '<div class="welcome-banner"><h1>📊 Placement Control Center</h1>'
-            '<p>Manage candidates, track pipeline, send communications and analyse placements.</p></div>',
+            '<div class="welcome-banner">'
+            '<h1>📊 Placement Control Center</h1>'
+            '<p>Manage candidates, track pipeline, send communications and analyse placements.</p>'
+            '</div>',
             unsafe_allow_html=True
         )
 
@@ -958,11 +1373,14 @@ def show_app():
         except Exception:
             apps = pd.DataFrame()
 
-        default_cols = {"status": "Applied", "sector": "", "sector_match_score": 0,
-                        "placement_probability": 0, "contract_accepted": 0,
-                        "resume_path": "", "feedback": "", "ai_score": 0, "email": ""}
+        default_cols = {
+            "status": "Applied", "sector": "", "sector_match_score": 0,
+            "placement_probability": 0, "contract_accepted": 0,
+            "resume_path": "", "feedback": "", "ai_score": 0, "email": ""
+        }
         for col, default in default_cols.items():
-            if col not in apps.columns: apps[col] = default
+            if col not in apps.columns:
+                apps[col] = default
         apps["status"] = apps["status"].fillna("Applied")
         apps["email"]  = apps["email"].fillna("")
 
@@ -981,17 +1399,35 @@ def show_app():
             st.markdown("<br>", unsafe_allow_html=True)
 
             # ── Charts ────────────────────────────────────────
-            st.markdown('<div class="section-title" style="margin-top:8px;">📊 Visual Analytics</div>', unsafe_allow_html=True)
+            st.markdown(
+                '<div class="section-title" style="margin-top:8px;">📊 Visual Analytics</div>',
+                unsafe_allow_html=True
+            )
             cc1, cc2, cc3 = st.columns(3)
             with cc1:
-                st.plotly_chart(doughnut(["Placed","Not Placed"],[offered, max(total-offered,0)], "Placement Status"), use_container_width=True)
+                st.plotly_chart(
+                    doughnut(
+                        ["Placed", "Not Placed"],
+                        [offered, max(total - offered, 0)],
+                        "Placement Status"
+                    ),
+                    use_container_width=True
+                )
             with cc2:
                 sd = apps["sector"].replace("", pd.NA).dropna().value_counts()
-                if not sd.empty: st.plotly_chart(doughnut(sd.index.tolist(), sd.values.tolist(), "Sector Distribution"), use_container_width=True)
-                else: st.info("No sector data yet.")
+                if not sd.empty:
+                    st.plotly_chart(
+                        doughnut(sd.index.tolist(), sd.values.tolist(), "Sector Distribution"),
+                        use_container_width=True
+                    )
+                else:
+                    st.info("No sector data yet.")
             with cc3:
                 stds = apps["status"].value_counts()
-                st.plotly_chart(doughnut(stds.index.tolist(), stds.values.tolist(), "Pipeline Stages"), use_container_width=True)
+                st.plotly_chart(
+                    doughnut(stds.index.tolist(), stds.values.tolist(), "Pipeline Stages"),
+                    use_container_width=True
+                )
 
             # ── Candidate Table ───────────────────────────────
             st.markdown('<div class="glass-card">', unsafe_allow_html=True)
@@ -1007,7 +1443,8 @@ def show_app():
                     st.rerun()
 
             filtered = apps.copy()
-            if sf != "All": filtered = filtered[filtered["sector"].str.contains(sf, case=False, na=False)]
+            if sf != "All":
+                filtered = filtered[filtered["sector"].str.contains(sf, case=False, na=False)]
 
             tbl = (
                 '<table class="cand-table"><thead><tr>'
@@ -1017,18 +1454,23 @@ def show_app():
             )
             for _, row in filtered.iterrows():
                 prob_val  = int(row["placement_probability"] or 0)
-                pc = "#00e5a0" if prob_val >= 75 else "#ff8c42" if prob_val >= 50 else "#ff8080"
+                pc        = "#00e5a0" if prob_val >= 75 else "#ff8c42" if prob_val >= 50 else "#ff8080"
                 score_val = int(row["ai_score"] or 0)
                 tbl += (
                     f'<tr>'
                     f'<td style="color:var(--muted);">#{row["id"]}</td>'
                     f'<td style="font-weight:600;color:var(--text);">{row["student_name"]}</td>'
                     f'<td style="color:var(--muted);font-size:12px;">{row["email"] or "—"}</td>'
-                    f'<td><div style="color:#a87fff;font-weight:500;">{row["company"]}</div>'
-                    f'<div style="color:var(--muted);font-size:12px;">{row["role"]}</div></td>'
+                    f'<td>'
+                    f'<div style="color:#a87fff;font-weight:500;">{row["company"]}</div>'
+                    f'<div style="color:var(--muted);font-size:12px;">{row["role"]}</div>'
+                    f'</td>'
                     f'<td style="color:var(--muted);font-size:12px;">{row["sector"] or "—"}</td>'
-                    f'<td><span style="font-family:Outfit,sans-serif;font-weight:700;color:#fff;">{score_val}</span>'
-                    f'<div class="prog-wrap" style="width:80px;"><div class="prog-fill" style="width:{score_val}%;"></div></div></td>'
+                    f'<td>'
+                    f'<span style="font-family:Outfit,sans-serif;font-weight:700;color:#fff;">{score_val}</span>'
+                    f'<div class="prog-wrap" style="width:80px;">'
+                    f'<div class="prog-fill" style="width:{score_val}%;"></div></div>'
+                    f'</td>'
                     f'<td style="font-weight:700;color:{pc};">{prob_val}%</td>'
                     f'<td>{status_badge(row["status"])}</td>'
                     f'</tr>'
@@ -1038,7 +1480,11 @@ def show_app():
             st.markdown('</div>', unsafe_allow_html=True)
 
             # ── Resume Access ─────────────────────────────────
-            st.markdown('<div class="glass-card"><div class="section-title">📂 Student Resume Access</div>', unsafe_allow_html=True)
+            st.markdown(
+                '<div class="glass-card">'
+                '<div class="section-title">📂 Student Resume Access</div>',
+                unsafe_allow_html=True
+            )
             ra = apps[apps["resume_path"].notna() & (apps["resume_path"] != "")]
             if not ra.empty:
                 for _, row in ra.iterrows():
@@ -1047,29 +1493,43 @@ def show_app():
                         st.markdown(
                             f'<div style="padding:8px 0;">'
                             f'<span style="font-weight:600;color:var(--text);">{row["student_name"]}</span> '
-                            f'<span style="color:var(--muted);font-size:12px;">{row["company"]} · {row["role"]}</span>'
-                            f'</div>', unsafe_allow_html=True
+                            f'<span style="color:var(--muted);font-size:12px;">'
+                            f'{row["company"]} · {row["role"]}</span>'
+                            f'</div>',
+                            unsafe_allow_html=True
                         )
                     with rc2:
                         rb = get_resume_bytes(row["resume_path"])
                         if rb:
-                            st.download_button("⬇️", data=rb, file_name=os.path.basename(row["resume_path"]),
-                                               mime="application/pdf", key=f"dl_{row['id']}")
+                            st.download_button(
+                                "⬇️", data=rb,
+                                file_name=os.path.basename(row["resume_path"]),
+                                mime="application/pdf",
+                                key=f"dl_{row['id']}"
+                            )
                     with rc3:
-                        st.markdown(f'<small style="color:rgba(255,255,255,0.2)">`{os.path.basename(row["resume_path"])}`</small>', unsafe_allow_html=True)
+                        st.markdown(
+                            f'<small style="color:rgba(255,255,255,0.2)">'
+                            f'`{os.path.basename(row["resume_path"])}`</small>',
+                            unsafe_allow_html=True
+                        )
             else:
                 st.info("No resumes stored yet.")
             st.markdown('</div>', unsafe_allow_html=True)
 
             # ── Skill Gap — Radar + Bars ──────────────────────
-            st.markdown('<div class="glass-card"><div class="section-title">📉 Skill Gap Insights</div>', unsafe_allow_html=True)
+            st.markdown(
+                '<div class="glass-card">'
+                '<div class="section-title">📉 Skill Gap Insights</div>',
+                unsafe_allow_html=True
+            )
             mg = []
             for fb in apps["feedback"].dropna():
                 if "Missing:" in str(fb):
                     parts = str(fb).split("Missing:")[-1]
                     mg.extend([
                         s.strip()
-                        for s in parts.replace("[","").replace("]","").replace("'","").split(",")
+                        for s in parts.replace("[", "").replace("]", "").replace("'", "").split(",")
                         if s.strip()
                     ])
             if mg:
@@ -1077,7 +1537,8 @@ def show_app():
                 col_r, col_b = st.columns([1, 1])
                 with col_r:
                     fig = skill_gap_radar(skill_counts)
-                    if fig: st.plotly_chart(fig, use_container_width=True)
+                    if fig:
+                        st.plotly_chart(fig, use_container_width=True)
                 with col_b:
                     st.markdown(skill_gap_bars(skill_counts), unsafe_allow_html=True)
             else:
@@ -1088,11 +1549,18 @@ def show_app():
             col1, col2 = st.columns(2)
 
             with col1:
-                st.markdown('<div class="glass-card"><div class="section-title">🛠️ Update Stage</div>', unsafe_allow_html=True)
+                st.markdown(
+                    '<div class="glass-card">'
+                    '<div class="section-title">🛠️ Update Stage</div>',
+                    unsafe_allow_html=True
+                )
                 cand_options = [f"#{r['id']} — {r['student_name']}" for _, r in apps.iterrows()]
-                tid_str      = st.selectbox("Candidate", cand_options)
+                tid_str      = st.selectbox("Candidate", cand_options, key="stage_cand")
                 tid          = int(tid_str.split("#")[1].split(" ")[0])
-                update_to    = st.selectbox("Move to Stage", ["Applied","Screened","Shortlisted","Interview","Offered","Rejected"])
+                update_to    = st.selectbox(
+                    "Move to Stage",
+                    ["Applied", "Screened", "Shortlisted", "Interview", "Offered", "Rejected"]
+                )
                 if st.button("💾 Update Status", type="primary"):
                     db_exec("UPDATE applications SET status=:s WHERE id=:id", {"s": update_to, "id": tid})
                     st.success("✅ Status updated!")
@@ -1100,24 +1568,38 @@ def show_app():
                 st.markdown('</div>', unsafe_allow_html=True)
 
             with col2:
-                st.markdown('<div class="glass-card"><div class="section-title">📧 Smart Mailer</div>', unsafe_allow_html=True)
+                st.markdown(
+                    '<div class="glass-card">'
+                    '<div class="section-title">📧 Smart Mailer</div>',
+                    unsafe_allow_html=True
+                )
                 cand_row = apps[apps["id"] == tid].iloc[0]
-
-                # ── Auto-fetch student email from DB ─────────
                 fetched_email = str(cand_row.get("email", "") or "")
-                tmpl     = st.selectbox("Template", list(EMAIL_TEMPLATES.keys()))
-                subj, body = fill_template(tmpl, cand_row["student_name"], cand_row["company"], cand_row["role"])
 
-                # Read-only email display (disabled input trick)
+                tmpl = st.selectbox("Template", list(EMAIL_TEMPLATES.keys()))
+                subj, body = fill_template(
+                    tmpl,
+                    cand_row["student_name"],
+                    cand_row["company"],
+                    cand_row["role"]
+                )
+
                 if fetched_email:
                     st.markdown(
-                        f'<div style="background:rgba(5,5,7,0.7);border:1px solid var(--border);border-radius:12px;padding:10px 14px;margin-bottom:12px;">'
-                        f'<div style="font-size:11px;color:var(--muted);margin-bottom:4px;">RECIPIENT EMAIL (auto-fetched)</div>'
-                        f'<div style="color:#a87fff;font-family:\'JetBrains Mono\',monospace;font-size:13px;">{fetched_email}</div>'
-                        f'</div>', unsafe_allow_html=True
+                        f'<div style="background:rgba(5,5,7,0.7);border:1px solid var(--border);'
+                        f'border-radius:12px;padding:10px 14px;margin-bottom:12px;">'
+                        f'<div style="font-size:11px;color:var(--muted);margin-bottom:4px;">'
+                        f'RECIPIENT EMAIL (auto-fetched)</div>'
+                        f'<div style="color:#a87fff;font-family:\'JetBrains Mono\',monospace;'
+                        f'font-size:13px;">{fetched_email}</div>'
+                        f'</div>',
+                        unsafe_allow_html=True
                     )
                 else:
-                    fetched_email = st.text_input("Recipient Email (not on file)", placeholder="student@email.com")
+                    fetched_email = st.text_input(
+                        "Recipient Email (not on file)",
+                        placeholder="student@email.com"
+                    )
 
                 st.text_input("Subject", value=subj, key="subj_disp")
                 edit_body = st.text_area("Body", value=body, height=140)
@@ -1140,8 +1622,9 @@ def show_app():
                                 if GEMINI_AVAILABLE:
                                     genai.configure(api_key=GEMINI_API_KEY)
                                     r = genai.GenerativeModel("gemini-1.5-flash").generate_content(
-                                        f"Write a professional {tmpl} email for {cand_row['student_name']} "
-                                        f"applying for {cand_row['role']} at {cand_row['company']}. "
+                                        f"Write a professional {tmpl} email for "
+                                        f"{cand_row['student_name']} applying for "
+                                        f"{cand_row['role']} at {cand_row['company']}. "
                                         f"Keep it concise and warm."
                                     )
                                     st.text_area("AI Draft", value=r.text, height=140, key="ai_draft_out")
@@ -1152,10 +1635,20 @@ def show_app():
                 st.markdown('</div>', unsafe_allow_html=True)
 
             # ── Contract Tracker ──────────────────────────────
-            st.markdown('<div class="glass-card"><div class="section-title">📄 Contract Tracker</div>', unsafe_allow_html=True)
-            odf = apps[apps["status"] == "Offered"][["id","student_name","company","role","contract_accepted"]].copy()
+            st.markdown(
+                '<div class="glass-card">'
+                '<div class="section-title">📄 Contract Tracker</div>',
+                unsafe_allow_html=True
+            )
+            odf = apps[apps["status"] == "Offered"][
+                ["id", "student_name", "company", "role", "contract_accepted"]
+            ].copy()
             if not odf.empty:
-                odf["contract_accepted"] = odf["contract_accepted"].map({1:"✅ Accepted",0:"⏳ Pending"}).fillna("⏳ Pending")
+                odf["contract_accepted"] = (
+                    odf["contract_accepted"]
+                    .map({1: "✅ Accepted", 0: "⏳ Pending"})
+                    .fillna("⏳ Pending")
+                )
                 st.dataframe(odf, use_container_width=True, hide_index=True)
             else:
                 st.info("No candidates at 'Offered' stage yet.")
@@ -1165,7 +1658,8 @@ def show_app():
             st.markdown(
                 '<div style="text-align:center;padding:60px;color:var(--muted);">'
                 '<div style="font-size:3rem">📭</div>'
-                '<div style="font-family:Outfit,sans-serif;font-size:1.2rem;margin-top:12px;">No applications yet</div></div>',
+                '<div style="font-family:Outfit,sans-serif;font-size:1.2rem;margin-top:12px;">'
+                'No applications yet</div></div>',
                 unsafe_allow_html=True
             )
 
@@ -1174,26 +1668,27 @@ def show_app():
 # ENTRY POINT
 # ============================================================
 if __name__ == "__main__":
-    # 1. MUST BE FIRST - Added 'initial_sidebar_state' to ensure flex visibility
+    # 1. MUST be first Streamlit call
     st.set_page_config(
-        page_title="PlaceMind AI", 
-        page_icon="⚡", 
+        page_title="PlaceMind AI",
+        page_icon="⚡",
         layout="wide",
-        initial_sidebar_state="expanded" 
+        initial_sidebar_state="expanded",   # sidebar always starts open
     )
-    
-    # 2. Initialize logic
+
+    # 2. Bootstrap
     init_db()
     init_session()
     inject_css()
 
-    # 3. Sidebar & Auth
+    # 3. Sidebar brand
     st.sidebar.markdown("""
     <div class="sidebar-brand">
       <h2>⚡ PlaceMind AI</h2>
       <p>Placement Management 3.0</p>
     </div>""", unsafe_allow_html=True)
 
+    # 4. Route to auth or app
     if not st.session_state.logged_in:
         show_auth()
     else:
