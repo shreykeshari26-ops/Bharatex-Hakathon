@@ -4,3 +4,5 @@ pypdf2
 pandas
 plotly
 sqlalchemy
+psycopg2-binary
+supabase
