@@ -197,21 +197,22 @@ def inject_css():
     @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap');
 
     :root {
-        --bg:        #050507;
-        --bg-card:   rgba(12, 12, 18, 0.85);
-        --bg-raised: rgba(20, 20, 30, 0.9);
-        --border:    rgba(124, 77, 255, 0.18);
+        --bg:           #050507;
+        --bg-card:      rgba(12, 12, 18, 0.85);
+        --bg-raised:    rgba(20, 20, 30, 0.9);
+        --border:       rgba(124, 77, 255, 0.18);
         --border-hover: rgba(124, 77, 255, 0.5);
-        --purple:    #7c4dff;
-        --purple-lt: #a87fff;
-        --green:     #00e5a0;
-        --orange:    #ff8c42;
-        --blue:      #4d9fff;
-        --text:      #e8e8f4;
-        --muted:     rgba(232,232,244,0.45);
-        --glass:     rgba(124, 77, 255, 0.07);
+        --purple:       #7c4dff;
+        --purple-lt:    #a87fff;
+        --green:        #00e5a0;
+        --orange:       #ff8c42;
+        --blue:         #4d9fff;
+        --text:         #e8e8f4;
+        --muted:        rgba(232, 232, 244, 0.45);
+        --glass:        rgba(124, 77, 255, 0.07);
     }
 
+    /* Core Layout */
     html, body, [class*="css"] {
         font-family: 'Outfit', sans-serif !important;
         background: var(--bg) !important;
@@ -221,35 +222,36 @@ def inject_css():
     #MainMenu, footer, header { visibility: hidden; }
     .block-container { padding: 2rem 2.5rem 4rem !important; max-width: 1440px; }
 
-    /* Sidebar Toggle Button - FORCES VISIBILITY */
+    /* Sidebar Toggle Button - Optimized Visibility */
     [data-testid="stSidebarCollapseButton"] {
         background-color: var(--purple) !important;
         color: white !important;
-        border-radius: 50% !important;
-        left: 15px !important;
-        top: 15px !important;
-        z-index: 999999 !important;
+        border-radius: 8px !important;
+        left: 10px !important;
+        top: 10px !important;
+        z-index: 1000000 !important;
+        display: flex !important;
         box-shadow: 0 4px 15px rgba(124, 77, 255, 0.4) !important;
     }
     [data-testid="stSidebarCollapseButton"] svg {
         fill: white !important;
     }
 
-    /* Sidebar */
+    /* Sidebar Styling */
     [data-testid="stSidebar"] {
-        background: rgba(8,8,14,0.97) !important;
+        background: rgba(8, 8, 14, 0.97) !important;
         border-right: 1px solid var(--border) !important;
         backdrop-filter: blur(20px);
     }
-    [data-testid="stSidebar"] * { color: rgba(232,232,244,0.8) !important; }
+    [data-testid="stSidebar"] * { color: rgba(232, 232, 244, 0.8) !important; }
 
     /* Typography */
-    h1,h2,h3 { font-family:'Outfit',sans-serif !important; letter-spacing:-.03em; }
-    h1 { font-size:2.1rem !important; font-weight:900 !important; }
-    h2 { font-size:1.4rem !important; font-weight:700 !important; color:var(--purple-lt) !important; }
-    h3 { font-size:1.1rem !important; font-weight:600 !important; }
+    h1, h2, h3 { font-family: 'Outfit', sans-serif !important; letter-spacing: -.03em; }
+    h1 { font-size: 2.1rem !important; font-weight: 900 !important; }
+    h2 { font-size: 1.4rem !important; font-weight: 700 !important; color: var(--purple-lt) !important; }
+    h3 { font-size: 1.1rem !important; font-weight: 600 !important; }
 
-    /* Glass Cards */
+    /* UI Cards */
     .glass-card {
         background: var(--bg-card);
         border: 1px solid var(--border);
@@ -265,213 +267,7 @@ def inject_css():
     .glass-card:hover {
         border-color: var(--border-hover);
         transform: translateY(-2px);
-        box-shadow: 0 16px 48px rgba(124,77,255,0.15);
-    }
-    .glass-card::before {
-        content:'';
-        position:absolute; top:-60px; right:-60px;
-        width:160px; height:160px; border-radius:50%;
-        background: radial-gradient(circle, rgba(124,77,255,0.12), transparent 70%);
-        pointer-events: none;
-    }
-
-    /* Stat Cards */
-    .stat-card {
-        background: var(--bg-card);
-        border: 1px solid var(--border);
-        border-radius: 16px;
-        padding: 22px 24px;
-        backdrop-filter: blur(15px);
-        position: relative; overflow: hidden;
-        transition: transform .2s, box-shadow .2s, border-color .2s;
-    }
-    .stat-card:hover {
-        transform: translateY(-4px);
-        box-shadow: 0 20px 50px rgba(124,77,255,0.2);
-        border-color: var(--border-hover);
-    }
-    .stat-card .icon  { font-size:1.8rem; margin-bottom:8px; }
-    .stat-card .label { font-size:11px; color:var(--muted); text-transform:uppercase; letter-spacing:.1em; margin-bottom:6px; }
-    .stat-card .value { font-family:'Outfit',sans-serif; font-size:2.6rem; font-weight:900; line-height:1; }
-    .stat-card .sub   { font-size:12px; color:var(--muted); margin-top:5px; }
-    .stat-card.purple .value { color:var(--purple-lt); }
-    .stat-card.green  .value { color:var(--green); }
-    .stat-card.orange .value { color:var(--orange); }
-    .stat-card.blue   .value { color:var(--blue); }
-
-    /* Section Title */
-    .section-title {
-        font-family:'Outfit',sans-serif; font-size:1rem; font-weight:700;
-        color:var(--text); margin-bottom:16px;
-        display:flex; align-items:center; gap:8px;
-    }
-
-    /* Badges */
-    .badge { display:inline-block; padding:3px 12px; border-radius:999px; font-size:12px; font-weight:600; }
-    .badge-green  { background:rgba(0,229,160,.12);  color:var(--green);  border:1px solid rgba(0,229,160,.3); }
-    .badge-blue   { background:rgba(77,159,255,.12); color:var(--blue);   border:1px solid rgba(77,159,255,.3); }
-    .badge-orange { background:rgba(255,140,66,.12); color:var(--orange); border:1px solid rgba(255,140,66,.3); }
-    .badge-purple { background:rgba(124,77,255,.15); color:var(--purple-lt); border:1px solid rgba(124,77,255,.3); }
-    .badge-red    { background:rgba(255,80,80,.12);  color:#ff8080;       border:1px solid rgba(255,80,80,.3); }
-    .badge-gray   { background:rgba(255,255,255,.06); color:var(--muted); border:1px solid rgba(255,255,255,.1); }
-
-    /* Progress */
-    .prog-wrap { background:rgba(255,255,255,.06); border-radius:999px; height:6px; margin:6px 0; overflow:hidden; }
-    .prog-fill  { height:6px; border-radius:999px; background:linear-gradient(90deg,var(--purple),var(--purple-lt)); }
-
-    /* Match Cards */
-    .match-card {
-        background: var(--bg-raised);
-        border: 1px solid var(--border);
-        border-radius: 14px; padding: 16px 20px; margin-bottom: 12px;
-        transition: border-color .2s, transform .15s;
-    }
-    .match-card:hover { border-color: var(--border-hover); transform: translateX(4px); }
-
-    /* Inputs */
-    .stTextInput input, .stTextArea textarea {
-        background: rgba(20,20,30,0.8) !important;
-        border: 1px solid var(--border) !important;
-        border-radius: 12px !important;
-        color: var(--text) !important;
-        font-family: 'Outfit', sans-serif !important;
-        backdrop-filter: blur(10px);
-    }
-    .stTextInput input:focus, .stTextArea textarea:focus {
-        border-color: var(--purple) !important;
-        box-shadow: 0 0 0 3px rgba(124,77,255,0.18) !important;
-    }
-    .stTextInput label, .stTextArea label, .stSelectbox label, .stFileUploader label {
-        color: var(--muted) !important; font-size:13px !important;
-    }
-
-    /* Buttons */
-    .stButton > button {
-        background: linear-gradient(135deg, var(--purple), var(--purple-lt)) !important;
-        color: #fff !important; border: none !important; border-radius: 12px !important;
-        font-family: 'Outfit', sans-serif !important; font-weight: 700 !important;
-        font-size: 14px !important; padding: 10px 24px !important;
-        transition: opacity .2s, transform .15s, box-shadow .2s !important;
-        box-shadow: 0 4px 20px rgba(124,77,255,0.35) !important;
-    }
-    .stButton > button:hover {
-        opacity: .88 !important; transform: translateY(-2px) !important;
-        box-shadow: 0 8px 30px rgba(124,77,255,0.5) !important;
-    }
-    .stButton > button[kind="secondary"] {
-        background: rgba(20,20,30,0.8) !important;
-        border: 1px solid var(--border) !important;
-        color: var(--purple-lt) !important;
-        box-shadow: none !important;
-    }
-
-    /* Tabs */
-    .stTabs [data-baseweb="tab-list"] {
-        background: rgba(12,12,18,0.8) !important;
-        border-radius: 14px; padding: 4px; gap: 4px;
-        border: 1px solid var(--border);
-        backdrop-filter: blur(10px);
-    }
-    .stTabs [data-baseweb="tab"] {
-        background: transparent !important; border-radius: 10px !important;
-        color: var(--muted) !important; font-family: 'Outfit', sans-serif !important;
-        font-weight: 500 !important; padding: 8px 22px !important;
-    }
-    .stTabs [aria-selected="true"] {
-        background: linear-gradient(135deg, var(--purple), var(--purple-lt)) !important;
-        color: #fff !important;
-    }
-
-    /* Expander */
-    .streamlit-expanderHeader {
-        background: rgba(20,20,30,0.8) !important;
-        border-radius: 12px !important;
-        border: 1px solid var(--border) !important;
-        color: var(--purple-lt) !important;
-        font-family: 'Outfit', sans-serif !important;
-        backdrop-filter: blur(10px);
-    }
-    .streamlit-expanderContent {
-        background: rgba(12,12,18,0.8) !important;
-        border: 1px solid var(--border) !important;
-        border-top: none !important;
-    }
-
-    /* Metrics */
-    [data-testid="stMetric"] {
-        background: rgba(20,20,30,0.8) !important;
-        border: 1px solid var(--border) !important;
-        border-radius: 14px; padding: 16px !important;
-        backdrop-filter: blur(10px);
-    }
-    [data-testid="stMetricLabel"] { color: var(--muted) !important; font-size: 12px !important; }
-    [data-testid="stMetricValue"] { color: var(--purple-lt) !important; font-family: 'Outfit', sans-serif !important; }
-
-    /* Alerts */
-    .stSuccess { background: rgba(0,229,160,.08) !important; border: 1px solid rgba(0,229,160,.25) !important; border-radius: 12px !important; }
-    .stError   { background: rgba(255,80,80,.08) !important;  border: 1px solid rgba(255,80,80,.25) !important;  border-radius: 12px !important; }
-    .stInfo    { background: rgba(77,159,255,.08) !important; border: 1px solid rgba(77,159,255,.25) !important; border-radius: 12px !important; }
-    .stWarning { background: rgba(255,140,66,.08) !important; border: 1px solid rgba(255,140,66,.25) !important; border-radius: 12px !important; }
-
-    hr { border-color: var(--border) !important; margin: 20px 0 !important; }
-
-    /* Welcome Banner */
-    .welcome-banner {
-        background: linear-gradient(135deg, rgba(124,77,255,0.15) 0%, rgba(12,12,18,0.9) 60%);
-        border: 1px solid var(--border);
-        border-radius: 22px; padding: 32px 36px; margin-bottom: 28px;
-        backdrop-filter: blur(15px);
-        position: relative; overflow: hidden;
-    }
-    .welcome-banner::after {
-        content:''; position:absolute; top:-80px; right:-80px;
-        width:260px; height:260px; border-radius:50%;
-        background: radial-gradient(circle, rgba(124,77,255,0.25), transparent 70%);
-        pointer-events: none;
-    }
-    .welcome-banner h1 { font-size:2rem !important; margin:0 0 6px 0 !important; color:#fff !important; }
-    .welcome-banner p  { color:var(--muted); margin:0; font-size:14px; }
-
-    /* Sidebar brand */
-    .sidebar-brand {
-        background: linear-gradient(135deg, var(--purple), var(--purple-lt));
-        border-radius: 16px; padding: 20px; text-align:center; margin-bottom: 20px;
-        box-shadow: 0 8px 32px rgba(124,77,255,0.4);
-    }
-    .sidebar-brand h2 { color:#fff !important; font-family:'Outfit',sans-serif !important; font-size:1.4rem !important; margin:0 !important; }
-    .sidebar-brand p  { color:rgba(255,255,255,.7); font-size:11px; margin:4px 0 0; }
-
-    .user-pill {
-        background: rgba(124,77,255,.12);
-        border: 1px solid var(--border);
-        border-radius: 999px; padding: 8px 16px;
-        font-size:13px; color:var(--purple-lt);
-        display:inline-block; margin-bottom:16px;
-    }
-
-    /* Stage chips */
-    .stage-row  { display:flex; gap:6px; margin:12px 0; }
-    .stage-chip { flex:1; text-align:center; padding:6px 4px; border-radius:8px; font-size:11px; font-weight:600; background:rgba(255,255,255,.04); color:var(--muted); border:1px solid var(--border); }
-    .stage-chip.active { background:linear-gradient(135deg,var(--purple),var(--purple-lt)); color:#fff; border-color:transparent; }
-    .stage-chip.done   { background:rgba(0,229,160,.12); color:var(--green); border-color:rgba(0,229,160,.3); }
-
-    /* File uploader */
-    [data-testid="stFileUploader"] {
-        background: rgba(20,20,30,0.6) !important;
-        border: 2px dashed var(--border) !important;
-        border-radius: 14px !important;
-        backdrop-filter: blur(10px);
-    }
-                
-
-    /* Candidate table */
-    .cand-table { width:100%; border-collapse:collapse; font-size:13px; }
-    .cand-table th { padding:10px 14px; text-align:left; color:var(--muted); font-weight:500; border-bottom:1px solid var(--border); }
-    .cand-table td { padding:10px 14px; border-bottom:1px solid rgba(255,255,255,.04); }
-    .cand-table tr:hover td { background:rgba(124,77,255,.05); }
-
-    </style>
-    """, unsafe_allow_html=True)
+        box-shadow: 0 1
 
 
 
@@ -1378,16 +1174,20 @@ def show_app():
 # ENTRY POINT
 # ============================================================
 if __name__ == "__main__":
-    # 1. MUST BE FIRST
-    st.set_page_config(page_title="PlaceMind AI", page_icon="⚡", layout="wide")
+    # 1. MUST BE FIRST - Added 'initial_sidebar_state' to ensure flex visibility
+    st.set_page_config(
+        page_title="PlaceMind AI", 
+        page_icon="⚡", 
+        layout="wide",
+        initial_sidebar_state="expanded" 
+    )
     
-    
-    # 2. Then initialize logic
+    # 2. Initialize logic
     init_db()
     init_session()
     inject_css()
 
-    # 3. Then sidebar & auth
+    # 3. Sidebar & Auth
     st.sidebar.markdown("""
     <div class="sidebar-brand">
       <h2>⚡ PlaceMind AI</h2>
