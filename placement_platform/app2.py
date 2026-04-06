@@ -221,6 +221,20 @@ def inject_css():
     #MainMenu, footer, header { visibility: hidden; }
     .block-container { padding: 2rem 2.5rem 4rem !important; max-width: 1440px; }
 
+    /* Sidebar Toggle Button - FORCES VISIBILITY */
+    [data-testid="stSidebarCollapseButton"] {
+        background-color: var(--purple) !important;
+        color: white !important;
+        border-radius: 50% !important;
+        left: 15px !important;
+        top: 15px !important;
+        z-index: 999999 !important;
+        box-shadow: 0 4px 15px rgba(124, 77, 255, 0.4) !important;
+    }
+    [data-testid="stSidebarCollapseButton"] svg {
+        fill: white !important;
+    }
+
     /* Sidebar */
     [data-testid="stSidebar"] {
         background: rgba(8,8,14,0.97) !important;
@@ -448,6 +462,7 @@ def inject_css():
         border-radius: 14px !important;
         backdrop-filter: blur(10px);
     }
+                
 
     /* Candidate table */
     .cand-table { width:100%; border-collapse:collapse; font-size:13px; }
@@ -457,7 +472,6 @@ def inject_css():
 
     </style>
     """, unsafe_allow_html=True)
-
 
 
 
@@ -1366,6 +1380,7 @@ def show_app():
 if __name__ == "__main__":
     # 1. MUST BE FIRST
     st.set_page_config(page_title="PlaceMind AI", page_icon="⚡", layout="wide")
+    
     
     # 2. Then initialize logic
     init_db()
