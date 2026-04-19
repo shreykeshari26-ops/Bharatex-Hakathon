@@ -1003,6 +1003,7 @@ def show_landing():
                 <div class="f-desc">Generate offer letters instantly, dispatch automated AI-penned emails, and seal digital contracts with a click.</div>
             </div>
         </div>
+<<<<<<< HEAD
         <div class="feature-grid" style="margin-top: 30px; gap: 16px;">
             <div class="f-card" style="padding:24px 24px;">
                 <div class="f-title">Institution-ready placement intelligence</div>
@@ -1018,6 +1019,10 @@ def show_landing():
             </div>
         </div>
         <div style="margin-top: 60px; font-size: 13px; color: var(--muted); opacity: 0.85; animation: slideUpFade 1s cubic-bezier(0.16, 1, 0.3, 1) 0.6s forwards;">
+=======
+        
+        <div style="margin-top: 60px; font-size: 13px; color: var(--muted); opacity: 0.7; animation: slideUpFade 1s cubic-bezier(0.16, 1, 0.3, 1) 0.6s forwards; opacity: 0;">
+>>>>>>> 1feb0e5ac997127442b1f39ad66fb985fe50df4a
             © 2026 PlaceMind AI. All rights reserved.
         </div>
     </div>
