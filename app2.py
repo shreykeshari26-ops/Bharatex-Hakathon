@@ -830,6 +830,10 @@ def show_landing():
         0% { opacity: 0; transform: translateY(40px); }
         100% { opacity: 1; transform: translateY(0); }
     }
+    @keyframes float {
+        0%, 100% { transform: translateY(0px); }
+        50% { transform: translateY(-20px); }
+    }
     
     .landing-wrapper {
         display: flex;
@@ -840,7 +844,7 @@ def show_landing():
     
     .landing-hero {
         text-align: center;
-        padding: 5vh 20px 40px;
+        padding: 8vh 20px 60px;
         max-width: 900px;
         animation: slideUpFade 1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
     }
@@ -857,6 +861,7 @@ def show_landing():
         border: 1px solid rgba(124,77,255,0.3);
         letter-spacing: 1px;
         text-transform: uppercase;
+        animation: slideUpFade 1s cubic-bezier(0.16, 1, 0.3, 1) 0.1s both;
     }
     
     .landing-title {
@@ -867,11 +872,12 @@ def show_landing():
         background: linear-gradient(135deg, #fff 0%, #a87fff 50%, #00e5a0 100%);
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
-        animation: glowPulse 4s infinite, slideUpFade 1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        animation: glowPulse 4s infinite, slideUpFade 1s cubic-bezier(0.16, 1, 0.3, 1) 0.15s both;
     }
     
     @media (max-width: 768px) {
         .landing-title { font-size: 3.5rem !important; }
+        .landing-hero { padding: 6vh 20px 40px; }
     }
     
     .landing-subtitle {
@@ -879,8 +885,7 @@ def show_landing():
         color: var(--muted);
         line-height: 1.7;
         margin-bottom: 48px;
-        animation: slideUpFade 1s cubic-bezier(0.16, 1, 0.3, 1) 0.1s forwards;
-        opacity: 0;
+        animation: slideUpFade 1s cubic-bezier(0.16, 1, 0.3, 1) 0.2s both;
     }
     
     .feature-grid {
@@ -907,10 +912,10 @@ def show_landing():
         position: relative;
         overflow: hidden;
     }
-    .f-card:nth-child(1) { animation-delay: 0.2s; }
-    .f-card:nth-child(2) { animation-delay: 0.3s; }
-    .f-card:nth-child(3) { animation-delay: 0.4s; }
-    .f-card:nth-child(4) { animation-delay: 0.5s; }
+    .f-card:nth-child(1) { animation-delay: 0.25s; }
+    .f-card:nth-child(2) { animation-delay: 0.35s; }
+    .f-card:nth-child(3) { animation-delay: 0.45s; }
+    .f-card:nth-child(4) { animation-delay: 0.55s; }
     
     .f-card::before {
         content: '';
@@ -973,15 +978,35 @@ def show_landing():
     
     _, col, _ = st.columns([1, 1.2, 1])
     with col:
-        st.markdown('<div style="animation: slideUpFade 1s cubic-bezier(0.16, 1, 0.3, 1) 0.2s forwards; opacity: 0; padding: 0 10px;">', unsafe_allow_html=True)
+        st.markdown('<div style="animation: slideUpFade 1s cubic-bezier(0.16, 1, 0.3, 1) 0.3s both; padding: 0 10px;">', unsafe_allow_html=True)
         if st.button("🚀 Sign In / Register", type="primary", use_container_width=True):
             st.session_state.show_login = True
             st.rerun()
         st.markdown('</div>', unsafe_allow_html=True)
 
     st.markdown("""
-    <div class="landing-wrapper" style="padding-top: 0;">
-        <div class="feature-grid">
+    <style>
+    .section-divider { margin: 80px 0; }
+    .stat-section { background: rgba(124,77,255,0.08); border: 1px solid rgba(124,77,255,0.15); border-radius: 24px; padding: 60px 40px; margin: 60px auto; max-width: 1200px; text-align: center; }
+    .stat-row { display: grid; grid-template-columns: 1fr 1fr; gap: 60px; margin: 40px 0; align-items: center; }
+    .stat-number { font-size: 4.5rem; font-weight: 900; color: #7c4dff; font-family: 'Outfit', sans-serif; }
+    .stat-label { font-size: 1.1rem; color: var(--muted); margin-top: 12px; line-height: 1.6; }
+    .process-section { max-width: 1200px; margin: 80px auto; padding: 0 20px; }
+    .process-row { display: grid; grid-template-columns: 1fr 1fr; gap: 60px; align-items: center; margin: 60px 0; }
+    .process-list { display: flex; flex-direction: column; gap: 24px; }
+    .process-step { display: flex; gap: 20px; }
+    .step-number { display: inline-flex; align-items: center; justify-content: center; width: 48px; height: 48px; background: linear-gradient(135deg, #7c4dff, #a87fff); color: #fff; border-radius: 50%; font-weight: 900; font-size: 1.3rem; flex-shrink: 0; }
+    .step-content h4 { color: #fff; font-weight: 700; margin: 0 0 8px 0; }
+    .step-content p { color: var(--muted); margin: 0; font-size: 0.95rem; }
+    .cta-section { text-align: center; padding: 80px 40px; max-width: 900px; margin: 0 auto; }
+    .cta-text { font-size: 1.1rem; color: var(--muted); margin-bottom: 32px; line-height: 1.7; }
+    </style>
+    """, unsafe_allow_html=True)
+    
+    # Feature Grid
+    st.markdown("""
+    <div class="landing-wrapper" style="padding-top: 40px; padding-bottom: 0;">
+        <div class="feature-grid" style="margin-top: 0;">
             <div class="f-card">
                 <div class="f-icon">🧠</div>
                 <div class="f-title">AI Resume Screening</div>
@@ -1003,28 +1028,108 @@ def show_landing():
                 <div class="f-desc">Generate offer letters instantly, dispatch automated AI-penned emails, and seal digital contracts with a click.</div>
             </div>
         </div>
-<<<<<<< HEAD
-        <div class="feature-grid" style="margin-top: 30px; gap: 16px;">
-            <div class="f-card" style="padding:24px 24px;">
-                <div class="f-title">Institution-ready placement intelligence</div>
-                <div class="f-desc">Designed for TPOs, HR teams, and students to collaborate in one platform, with role-specific analytics, smart matching, and placement readiness scores.</div>
+    </div>
+    """, unsafe_allow_html=True)
+
+    # Why PlaceMind Section
+    st.markdown("""
+    <div class="stat-section">
+        <h2 style="font-size: 2.2rem; color: #fff; margin-bottom: 16px; font-weight: 800;">Why PlaceMind AI Matters</h2>
+        <p style="color: var(--muted); font-size: 1rem; margin-bottom: 48px;">Most qualified candidates don't get placed—not because of poor skills, but because their profiles aren't optimized for AI screening systems.</p>
+        <div class="stat-row">
+            <div>
+                <div class="stat-number">73%</div>
+                <div class="stat-label">of top-tier institutions struggle with placement coordination and lack real-time candidate tracking</div>
             </div>
-            <div class="f-card" style="padding:24px 24px;">
-                <div class="f-title">Reliable candidate visibility</div>
-                <div class="f-desc">Track every student application from resume upload to contract acceptance, while reducing manual screening and follow-ups.</div>
-            </div>
-            <div class="f-card" style="padding:24px 24px;">
-                <div class="f-title">Actionable improvement guidance</div>
-                <div class="f-desc">Receive targeted suggestions for missing skills, certifications, and sector alignment to boost placement probability instantly.</div>
+            <div>
+                <div class="stat-number">68%</div>
+                <div class="stat-label">of qualified students miss interviews due to resume misalignment with sector requirements</div>
             </div>
         </div>
-        <div style="margin-top: 60px; font-size: 13px; color: var(--muted); opacity: 0.85; animation: slideUpFade 1s cubic-bezier(0.16, 1, 0.3, 1) 0.6s forwards;">
-=======
+    </div>
+    """, unsafe_allow_html=True)
+
+    # How It Works Section
+    st.markdown("""
+    <div class="process-section">
+        <h2 style="font-size: 2.2rem; color: #fff; text-align: center; margin-bottom: 60px; font-weight: 800;">How PlaceMind AI Works</h2>
         
-        <div style="margin-top: 60px; font-size: 13px; color: var(--muted); opacity: 0.7; animation: slideUpFade 1s cubic-bezier(0.16, 1, 0.3, 1) 0.6s forwards; opacity: 0;">
->>>>>>> 1feb0e5ac997127442b1f39ad66fb985fe50df4a
-            © 2026 PlaceMind AI. All rights reserved.
+        <div class="process-row">
+            <div class="process-list">
+                <div class="process-step">
+                    <div class="step-number">1</div>
+                    <div class="step-content">
+                        <h4>Upload Profile & Target Role</h4>
+                        <p>Students submit resumes and job descriptions they're interested in</p>
+                    </div>
+                </div>
+                <div class="process-step">
+                    <div class="step-number">2</div>
+                    <div class="step-content">
+                        <h4>AI-Powered Analysis</h4>
+                        <p>Our system instantly analyzes fit and identifies skill gaps</p>
+                    </div>
+                </div>
+                <div class="process-step">
+                    <div class="step-number">3</div>
+                    <div class="step-content">
+                        <h4>Smart Recommendations</h4>
+                        <p>Receive actionable insights and improvement tips</p>
+                    </div>
+                </div>
+                <div class="process-step">
+                    <div class="step-number">4</div>
+                    <div class="step-content">
+                        <h4>Auto-Shortlisting</h4>
+                        <p>HR teams can instantly shortlist candidates meeting thresholds</p>
+                    </div>
+                </div>
+            </div>
+            <div style="background: rgba(124,77,255,0.1); border: 1px solid rgba(124,77,255,0.2); border-radius: 20px; padding: 40px; text-align: center; height: 100%; display: flex; align-items: center; justify-content: center;">
+                <div style="font-size: 5rem;">📋 ➜ 🤖 ➜ 📊 ➜ ✅</div>
+            </div>
         </div>
+    </div>
+    """, unsafe_allow_html=True)
+
+    # Key Benefits Section
+    st.markdown("""
+    <div style="max-width: 1200px; margin: 80px auto; padding: 0 20px;">
+        <h2 style="font-size: 2.2rem; color: #fff; text-align: center; margin-bottom: 60px; font-weight: 800;">Why Institutions Trust PlaceMind</h2>
+        <div class="feature-grid">
+            <div class="f-card">
+                <div style="font-size: 2.8rem; margin-bottom: 16px;">🎯</div>
+                <div class="f-title">Precision Matching</div>
+                <div class="f-desc">Match students to roles with 78% higher accuracy using sector-specific AI models and real-time skill alignment</div>
+            </div>
+            <div class="f-card">
+                <div style="font-size: 2.8rem; margin-bottom: 16px;">⏱️</div>
+                <div class="f-title">Save 15+ Hours</div>
+                <div class="f-desc">Automated screening and instant shortlisting cuts manual review time by over 90%</div>
+            </div>
+            <div class="f-card">
+                <div style="font-size: 2.8rem; margin-bottom: 16px;">📈</div>
+                <div class="f-title">Boost Placements</div>
+                <div class="f-desc">Institutions using PlaceMind see 35% higher student placement rates with improved retention</div>
+            </div>
+            <div class="f-card">
+                <div style="font-size: 2.8rem; margin-bottom: 16px;">🔒</div>
+                <div class="f-title">Enterprise-Ready</div>
+                <div class="f-desc">Bank-grade security, GDPR-compliant, with digital contract signing and full audit trails</div>
+            </div>
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
+
+    # Call to Action
+    st.markdown("""
+    <div class="cta-section">
+        <h2 style="font-size: 2rem; color: #fff; margin-bottom: 20px; font-weight: 800;">Ready to Transform Your Placement Process?</h2>
+        <p class="cta-text">Join 500+ institutions already using PlaceMind AI to streamline hiring, empower students, and eliminate placement bottlenecks efficiently.</p>
+    </div>
+
+    <div style="margin-top: 60px; font-size: 13px; color: var(--muted); opacity: 0.85; text-align: center; animation: slideUpFade 1s cubic-bezier(0.16, 1, 0.3, 1) 0.6s forwards;">
+        © 2026 PlaceMind AI. All rights reserved.
     </div>
     """, unsafe_allow_html=True)
 
