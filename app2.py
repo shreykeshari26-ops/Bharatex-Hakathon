@@ -1049,48 +1049,44 @@ def show_landing():
     </div>
     """, unsafe_allow_html=True)
 
-    # How It Works Section
-    st.markdown("""
-    <div class="process-section">
-        <h2 style="font-size: 2.2rem; color: #fff; text-align: center; margin-bottom: 60px; font-weight: 800;">How PlaceMind AI Works</h2>
-        
-        <div class="process-row">
-            <div class="process-list">
-                <div class="process-step">
-                    <div class="step-number">1</div>
-                    <div class="step-content">
-                        <h4>Upload Profile & Target Role</h4>
-                        <p>Students submit resumes and job descriptions they're interested in</p>
-                    </div>
-                </div>
-                <div class="process-step">
-                    <div class="step-number">2</div>
-                    <div class="step-content">
-                        <h4>AI-Powered Analysis</h4>
-                        <p>Our system instantly analyzes fit and identifies skill gaps</p>
-                    </div>
-                </div>
-                <div class="process-step">
-                    <div class="step-number">3</div>
-                    <div class="step-content">
-                        <h4>Smart Recommendations</h4>
-                        <p>Receive actionable insights and improvement tips</p>
-                    </div>
-                </div>
-                <div class="process-step">
-                    <div class="step-number">4</div>
-                    <div class="step-content">
-                        <h4>Auto-Shortlisting</h4>
-                        <p>HR teams can instantly shortlist candidates meeting thresholds</p>
-                    </div>
-                </div>
-            </div>
-            <div style="background: rgba(124,77,255,0.1); border: 1px solid rgba(124,77,255,0.2); border-radius: 20px; padding: 40px; text-align: center; height: 100%; display: flex; align-items: center; justify-content: center;">
-                <div style="font-size: 5rem;">📋 ➜ 🤖 ➜ 📊 ➜ ✅</div>
-            </div>
-        </div>
-    </div>
-    """, unsafe_allow_html=True)
+    # How It Works Section - Fixed using components to bypass grey-box bug
+    st.markdown("<br><br><h2 style='text-align:center; color:#a87fff; font-family:Outfit, sans-serif; font-weight:800;'>How PlaceMind AI Works</h2>", unsafe_allow_html=True)
+    
+    import streamlit.components.v1 as components
+    
+    html_content = '''
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;700;900&display=swap');
+        body { font-family: 'Outfit', sans-serif; color: white; background: transparent; margin: 0; padding: 10px; }
+        .card { 
+            background: rgba(255, 255, 255, 0.03); 
+            border: 1px solid rgba(124, 77, 255, 0.2); 
+            border-radius: 16px; 
+            padding: 20px; 
+            margin-bottom: 12px; 
+            display: flex; 
+            align-items: center; 
+            gap: 15px;
+            backdrop-filter: blur(10px);
+        }
+        .step-num { 
+            background: linear-gradient(135deg, #7c4dff, #a87fff); 
+            width: 36px; height: 36px; border-radius: 50%; 
+            display: flex; align-items: center; justify-content: center; 
+            font-weight: 900; flex-shrink: 0; box-shadow: 0 4px 12px rgba(124,77,255,0.3);
+        }
+        .content h4 { margin: 0; color: #fff; font-size: 15px; }
+        .content p { margin: 4px 0 0; color: rgba(232,232,244,0.5); font-size: 13px; line-height: 1.4; }
+        .emoji-bar { text-align: center; font-size: 2.5rem; padding: 20px; margin-top: 20px; background: rgba(124,77,255,0.05); border-radius: 15px; }
+    </style>
+    <div class="card"><div class="step-num">1</div><div class="content"><h4>Upload Profile & Target Role</h4><p>Submit resumes and job descriptions for analysis.</p></div></div>
+    <div class="card"><div class="process-card"><div class="step-num">2</div><div class="content"><h4>AI-Powered Analysis</h4><p>Our system instantly identifies skill gaps and fit.</p></div></div></div>
+    <div class="card"><div class="step-num">3</div><div class="content"><h4>Smart Recommendations</h4><p>Receive actionable insights and improvement tips.</p></div></div>
+    <div class="card"><div class="step-num">4</div><div class="content"><h4>Auto-Shortlisting</h4><p>HR teams instantly shortlist top matching talent.</p></div></div>
+    <div class="emoji-bar">📋 ➜ 🤖 ➜ 📊 ➜ ✅</div>
+    '''
+    
+    components.html(html_content, height=550)
 
     # Key Benefits Section
     st.markdown("""
